@@ -1,0 +1,39 @@
+{
+  "name": "9GAG - facts matter",
+  "description": "Filter spam, hide low-quality posts, show account age, and take control of your 9GAG feed.",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "permissions": ["storage"],
+  "host_permissions": ["https://9gag.com/*"],
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "content_scripts": [
+    {
+      "css": ["assets/css/content.css"],
+      "js": [
+        "assets/js/variables.js",
+        "assets/js/functions.js",
+        "assets/js/cash.js",
+        "assets/js/api.js",
+        "assets/js/filters.js",
+        "assets/js/ui-inject.js",
+        "assets/js/content.js"
+      ],
+      "matches": ["https://9gag.com/*"]
+    }
+  ]
+}

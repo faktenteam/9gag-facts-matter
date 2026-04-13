@@ -1,0 +1,133 @@
+"use strict";
+
+// Debug logging
+const DEBUG = false;
+function log(...args) {
+  if (DEBUG) console.log('%c[9gag-fm]', 'color: #00ff88; font-weight: bold;', ...args);
+}
+
+const CONSTANTS = {
+  CACHE_DURATION: 3 * 60 * 60 * 1000,
+  SECONDS_PER_DAY: 86400,
+  DEFAULT_SPAMMER_HOURS: 12,
+  MIN_POSTS_FOR_SPAM_CHECK: 10,
+  MAX_FETCH_RETRIES: 2,
+  RETRY_DELAY: 1000,
+  SPAMMER_LABEL: "FactsDon'tMatter",
+};
+
+// Shared mutable state
+let settings = {};
+const processedPosts = new WeakSet();
+let activeIntervals = [];
+
+
+const settingsKeys = [
+  "show_days", "min_days", "spammers", "spammers_hours", "cheers",
+  "more_downvotes", "hide_spammers", "always_display_upvotes",
+  "show_controls", "hide_meme",
+  "filter_keywords", "filter_tags",
+  "hide_promoted",
+  "hide_videos", "hide_gifs", "hide_images",
+  "hide_potz",
+];
+
+// Array-based settings stored separately in chrome.storage
+const listSettingsKeys = ["blocked_users", "whitelisted_users"];
+
+const defaultSettings = {
+  show_days: true,
+  min_days: 0,
+  spammers: true,
+  spammers_hours: 12,
+  cheers: true,
+  more_downvotes: false,
+  hide_spammers: false,
+  always_display_upvotes: true,
+  show_controls: false,
+  hide_meme: false,
+  filter_keywords: "",
+  filter_tags: "",
+  hide_promoted: false,
+  hide_videos: false,
+  hide_gifs: false,
+  hide_images: false,
+  hide_potz: true,
+};
+
+const defaultListSettings = {
+  blocked_users: [],
+  whitelisted_users: [],
+};
+
+// Centralized DOM selectors for 9GAG elements.
+// If 9GAG redesigns their DOM, only this registry needs updating.
+// Some selectors have fallback arrays — use resolveSelector() to pick the first match.
+const S = {
+  // Containers
+  container: '#container',
+  listView: '#list-view-2',
+  listViewClass: 'list-view',
+  listViewContent: '.list-view__content',
+  streamContainer: '.stream-container',
+
+  // Post header / creator
+  postCreator: '.ui-post-creator',
+  postCreatorAuthor: '.ui-post-creator__author',
+  postHeaderLeft: '.post-header__left',
+  postMetaMobile: '.post-meta.mobile',
+  creatorUserLink: '.creator a[href*="/u/"]',
+  anyUserLink: 'a[href*="/u/"]',
+  headerLinks: 'header a',
+
+  // Post content
+  postAward: '.post-award',
+  postAwardUsers: '.post-award-users',
+  createMemeBtn: '.create-meme-btn',
+  potzBadge: '.potz-badge',
+  postTitle: 'header h1, header h2, .post-title',
+  postTags: 'a[href*="/tag/"]',
+  promotedIndicator: '.badge-is-promoted, .promoted-badge, [data-is-promoted="true"]',
+
+  // Voting
+  upvote: '.upvote',
+  postVote: '.post-vote',
+  downvoteGrouped: '.downvote.grouped',
+
+  // Media type detection
+  videoPost: 'video, .post-video source[type*="video"]',
+  gifPost: '.post-gif, img[src*=".gif"], picture source[type="image/webp"]',
+
+  // Menu (username extraction fallback)
+  popupMenu: '.uikit-popup-menu',
+  menuButton: '.button',
+  menuLinks: '.menu a',
+
+  // Our injected content
+  injectedAll: '.pf-info, .spammer-label, .days-label, .post-vote__text.downvote, .user-link',
+  userLink: '.pf-user, .user-link',
+
+  // Article states
+  unprocessed: 'article:not(.pf-processed):not(.filtering)',
+  processed: 'article.pf-processed, article.filtering',
+};
+
+// Validate critical selectors on startup and warn about missing ones
+function validateSelectors() {
+  const critical = [
+    ['container', S.container],
+    ['listView', S.listView],
+    ['streamContainer', S.streamContainer],
+  ];
+  const warnings = [];
+  for (const [name, selector] of critical) {
+    if (!document.querySelector(selector)) {
+      warnings.push(name);
+    }
+  }
+  if (warnings.length) {
+    console.warn('[9gag-fm] Missing DOM elements for selectors:', warnings.join(', '),
+      '— 9GAG may have changed their layout. Some features may not work.');
+  }
+  return warnings;
+}

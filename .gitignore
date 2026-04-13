@@ -1,0 +1,31 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Claude Code
+.claude/
+.mcp.json
+
+# Editor / IDE
+.zed/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dev tooling
+eslint.config.mjs
+package.json
+package-lock.json
+
+# Build artifacts
+node_modules/
+dist/
+*.zip
+*.crx
+*.pem
+
+# Logs
+*.log
+.editorconfig
