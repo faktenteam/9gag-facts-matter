@@ -1,6 +1,6 @@
 # 🛡️ 9GAG - facts matter
 
-> A **Chrome** browser extension that gives you full control over your 9GAG feed — filter spam, hide low-quality posts, and improve your browsing experience.
+> A browser extension for **Chrome**, **Brave**, and **Edge** that gives you full control over your 9GAG feed — filter spam, hide low-quality posts, and improve your browsing experience.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
@@ -36,9 +36,12 @@
 
 1. Download or clone this repository:
    ```bash
-   git clone https://github.com/factsmatter/9gag-facts-matter.git
+   git clone https://github.com/faktenteam/9gag-facts-matter.git
    ```
-2. Open `chrome://extensions/` in Chrome
+2. Open the extensions page in your browser:
+   - **Chrome**: `chrome://extensions/`
+   - **Brave**: `brave://extensions/`
+   - **Edge**: `edge://extensions/`
 3. Enable **Developer Mode** (top right)
 4. Click **"Load unpacked"**
 5. Select the folder of this repository
@@ -77,7 +80,7 @@
 │   └── icons/
 │       ├── icon-16.png        # Toolbar icon
 │       ├── icon-48.png        # Extensions page icon
-│       └── icon-128.png       # Chrome Web Store icon
+│       └── icon-128.png       # Web Store icon
 └── README.md
 ```
 
@@ -85,7 +88,7 @@
 
 ## 🛠️ Technologies
 
-- **Manifest V3** – Modern Chrome extension format
+- **Manifest V3** – Modern Chromium extension format (Chrome, Brave, Edge)
 - **[Pico CSS](https://picocss.com/)** (Jade theme) – Minimal CSS framework for the popup
 - **[Cash.js](https://github.com/fabiospampinato/cash)** – Lightweight jQuery alternative (~6 KB)
 - **Chrome Storage API** – For persisting user settings
