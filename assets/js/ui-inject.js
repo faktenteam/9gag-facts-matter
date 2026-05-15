@@ -18,13 +18,65 @@ function calculateAccountAge(creationTs) {
   return Math.floor(diff / CONSTANTS.SECONDS_PER_DAY);
 }
 
-function appendToPostHeader(post, html) {
-  if (post.find(S.postCreator).length) {
-    post.find(S.postCreator).first().append(html);
+function appendToTarget(target, content, shouldClone) {
+  if (!target.length) return;
+  if (content && typeof content.cloneNode === 'function') {
+    target.append(shouldClone ? content.cloneNode(true) : content);
   } else {
-    post.find(S.postHeaderLeft).first().append(html);
-    post.find(S.postMetaMobile).first().append(html);
+    target.append(content);
   }
+}
+
+function appendToPostHeader(post, content) {
+  if (post.find(S.postCreator).length) {
+    appendToTarget(post.find(S.postCreator).first(), content, false);
+  } else {
+    appendToTarget(post.find(S.postHeaderLeft).first(), content, false);
+    appendToTarget(post.find(S.postMetaMobile).first(), content, true);
+  }
+}
+
+function createInfoBar(username, hasAuthor) {
+  const encodedName = encodeURIComponent(username);
+  const infoBar = document.createElement('span');
+  infoBar.className = 'pf-info';
+
+  if (!hasAuthor) {
+    const userLink = document.createElement('a');
+    userLink.className = 'pf-user';
+    userLink.href = `https://9gag.com/u/${encodedName}`;
+    userLink.textContent = `@${username}`;
+    infoBar.appendChild(userLink);
+  }
+
+  const age = document.createElement('span');
+  age.className = 'pf-age';
+  infoBar.appendChild(age);
+
+  const spam = document.createElement('span');
+  spam.className = 'pf-spam';
+  spam.textContent = CONSTANTS.SPAMMER_LABEL;
+  infoBar.appendChild(spam);
+
+  const actions = document.createElement('span');
+  actions.className = 'pf-actions';
+
+  const blockButton = document.createElement('span');
+  blockButton.className = 'pf-block-btn';
+  blockButton.dataset.username = encodedName;
+  blockButton.title = 'Block user';
+  blockButton.textContent = '×';
+
+  const whitelistButton = document.createElement('span');
+  whitelistButton.className = 'pf-wl-btn';
+  whitelistButton.dataset.username = encodedName;
+  whitelistButton.title = 'Whitelist user';
+  whitelistButton.textContent = '☆';
+
+  actions.append(blockButton, whitelistButton);
+  infoBar.appendChild(actions);
+
+  return infoBar;
 }
 
 function addAccountAge(post, days) {
@@ -84,24 +136,8 @@ async function addUsername(post, articleId) {
 
     // Build the unified info bar
     if (!post.find('.pf-info').length) {
-      const sanitizedName = document.createElement('div');
-      sanitizedName.textContent = name;
-      const safeName = sanitizedName.innerHTML;
-      const encodedName = encodeURIComponent(name);
-
       const hasAuthor = post.find(S.postCreatorAuthor).length > 0;
-      const userLinkHtml = hasAuthor ? '' : `<a class="pf-user" href="https://9gag.com/u/${encodedName}">@${safeName}</a>`;
-
-      const infoBar = `<span class="pf-info">`
-        + userLinkHtml
-        + `<span class="pf-age"></span>`
-        + `<span class="pf-spam">${CONSTANTS.SPAMMER_LABEL}</span>`
-        + `<span class="pf-actions">`
-        +   `<span class="pf-block-btn" data-username="${encodedName}" title="Block user">&times;</span>`
-        +   `<span class="pf-wl-btn" data-username="${encodedName}" title="Whitelist user">&#9734;</span>`
-        + `</span>`
-        + `</span>`;
-      appendToPostHeader(post, infoBar);
+      appendToPostHeader(post, createInfoBar(name, hasAuthor));
     }
 
     return name;

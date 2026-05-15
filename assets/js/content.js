@@ -272,14 +272,8 @@ function reapplyFromCache(post) {
 
   // Build the info bar for reapply (same as addUsername does for fresh posts)
   if (!post.find('.pf-info').length) {
-    const sanitizedName = document.createElement('div');
-    sanitizedName.textContent = username;
-    const safeName = sanitizedName.innerHTML;
-    const encodedName = encodeURIComponent(username);
     const hasAuthor = post.find(S.postCreatorAuthor).length > 0;
-    const userLinkHtml = hasAuthor ? '' : `<a class="pf-user" href="https://9gag.com/u/${encodedName}">@${safeName}</a>`;
-    const infoBar = `<span class="pf-info">${userLinkHtml}<span class="pf-age"></span><span class="pf-spam">${CONSTANTS.SPAMMER_LABEL}</span><span class="pf-actions"><span class="pf-block-btn" data-username="${encodedName}" title="Block user">&times;</span><span class="pf-wl-btn" data-username="${encodedName}" title="Whitelist user">&#9734;</span></span></span>`;
-    appendToPostHeader(post, infoBar);
+    appendToPostHeader(post, createInfoBar(username, hasAuthor));
   }
 
   const whitelisted = isWhitelistedUser(username);
