@@ -63,6 +63,9 @@
 ├── manifest.json              # Extension manifest (Manifest V3)
 ├── index.html                 # Popup UI
 ├── LICENSE                    # GPL-3.0 License
+├── CHANGELOG.md               # User-visible version history
+├── RELEASE.md                 # Maintainer release process
+├── THIRD_PARTY_NOTICES.md     # Bundled dependency versions/licenses
 ├── assets/
 │   ├── css/
 │   │   ├── pico.jade.css      # Pico CSS Framework (Jade theme)
@@ -92,6 +95,16 @@
 - **[Pico CSS](https://picocss.com/)** (Jade theme) – Minimal CSS framework for the popup
 - **[Cash.js](https://github.com/fabiospampinato/cash)** – Lightweight jQuery alternative (~6 KB)
 - **Chrome Storage API** – For persisting user settings
+
+Bundled third-party library versions, licenses, source links, and artifact hashes are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+---
+
+## 🚀 Versioning & Releases
+
+- Current extension version: **1.0.0**
+- User-visible changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+- Release/version rules and the release ZIP checklist are documented in [RELEASE.md](RELEASE.md).
 
 ---
 
