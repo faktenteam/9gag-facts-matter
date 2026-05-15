@@ -1,7 +1,7 @@
 {
   "name": "9GAG - facts matter",
   "description": "Filter spam, hide low-quality posts, show account age, and take control of your 9GAG feed.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "manifest_version": 3,
   "permissions": ["storage"],
   "host_permissions": ["https://9gag.com/*"],

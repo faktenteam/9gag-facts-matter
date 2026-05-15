@@ -93,6 +93,111 @@ function normalizeStringList(value) {
     });
 }
 
+function normalizeUsernameKey(username) {
+  return typeof username === "string" ? username.trim().toLowerCase() : "";
+}
+
+function userListIncludes(users, username) {
+  const key = normalizeUsernameKey(username);
+  if (!key) return false;
+  return normalizeStringList(users).some(
+    (u) => normalizeUsernameKey(u) === key,
+  );
+}
+
+function removeUserFromList(users, username) {
+  const key = normalizeUsernameKey(username);
+  if (!key) return normalizeStringList(users);
+  return normalizeStringList(users).filter(
+    (u) => normalizeUsernameKey(u) !== key,
+  );
+}
+
+function removeUsersFromList(users, usersToRemove) {
+  const keysToRemove = new Set(
+    normalizeStringList(usersToRemove).map((u) => normalizeUsernameKey(u)),
+  );
+  if (!keysToRemove.size) return normalizeStringList(users);
+  return normalizeStringList(users).filter(
+    (u) => !keysToRemove.has(normalizeUsernameKey(u)),
+  );
+}
+
+function getOtherUserListKey(key) {
+  if (key === "blocked_users") return "whitelisted_users";
+  if (key === "whitelisted_users") return "blocked_users";
+  return null;
+}
+
+function reconcileExclusiveUserLists(data, preferredKey = "whitelisted_users") {
+  const preferredListKey = getOtherUserListKey(preferredKey)
+    ? preferredKey
+    : "whitelisted_users";
+  const otherKey = getOtherUserListKey(preferredListKey);
+  const normalized = {
+    ...data,
+    blocked_users: normalizeStringList(data.blocked_users),
+    whitelisted_users: normalizeStringList(data.whitelisted_users),
+  };
+
+  normalized[otherKey] = removeUsersFromList(
+    normalized[otherKey],
+    normalized[preferredListKey],
+  );
+  return normalized;
+}
+
+function normalizeSettingsPatch(
+  data = {},
+  preferredListKey = "whitelisted_users",
+) {
+  const normalized = {};
+  for (const key of allSettingsKeys) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      normalized[key] = normalizeSettingValue(key, data[key]);
+    }
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(normalized, "blocked_users") &&
+    Object.prototype.hasOwnProperty.call(normalized, "whitelisted_users")
+  ) {
+    const reconciled = reconcileExclusiveUserLists(
+      normalized,
+      preferredListKey,
+    );
+    normalized.blocked_users = reconciled.blocked_users;
+    normalized.whitelisted_users = reconciled.whitelisted_users;
+  }
+
+  return normalized;
+}
+
+function addUserToExclusiveList(storageKey, username, currentData = {}) {
+  const otherKey = getOtherUserListKey(storageKey);
+  const cleanUsername = typeof username === "string" ? username.trim() : "";
+  if (!otherKey || !cleanUsername) return {};
+
+  const currentTarget = normalizeSettingValue(
+    storageKey,
+    currentData[storageKey],
+  );
+  const currentOther = normalizeSettingValue(otherKey, currentData[otherKey]);
+  const nextTarget = userListIncludes(currentTarget, cleanUsername)
+    ? currentTarget
+    : normalizeStringList([...currentTarget, cleanUsername]);
+  const nextOther = removeUserFromList(currentOther, cleanUsername);
+
+  const updates = {};
+  if (!settingsValueEquals(currentTarget, nextTarget)) {
+    updates[storageKey] = nextTarget;
+  }
+  if (!settingsValueEquals(currentOther, nextOther)) {
+    updates[otherKey] = nextOther;
+  }
+  return updates;
+}
+
 function getDefaultSettingValue(key) {
   if (listSettingsKeys.includes(key)) {
     return [...defaultListSettings[key]];
@@ -121,7 +226,10 @@ function normalizeSettingValue(key, value) {
   return fallback;
 }
 
-function normalizeSettingsData(data = {}) {
+function normalizeSettingsData(
+  data = {},
+  preferredListKey = "whitelisted_users",
+) {
   const normalized = {};
   for (const key of allSettingsKeys) {
     const hasValue = Object.prototype.hasOwnProperty.call(data, key);
@@ -130,7 +238,7 @@ function normalizeSettingsData(data = {}) {
       hasValue ? data[key] : getDefaultSettingValue(key),
     );
   }
-  return normalized;
+  return reconcileExclusiveUserLists(normalized, preferredListKey);
 }
 
 function settingsValueEquals(left, right) {

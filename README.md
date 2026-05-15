@@ -2,7 +2,7 @@
 
 > A browser extension for **Chrome**, **Brave**, and **Edge** that gives you full control over your 9GAG feed — filter spam, hide low-quality posts, and improve your browsing experience.
 
-![Version](https://img.shields.io/badge/version-1.0.1-blue)
+![Version](https://img.shields.io/badge/version-1.0.2-blue)
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
 ![License](https://img.shields.io/badge/license-GPL--3.0-blue)
 
@@ -102,7 +102,7 @@ Bundled third-party library versions, licenses, source links, and artifact hashe
 
 ## 🚀 Versioning & Releases
 
-- Current extension version: **1.0.1**
+- Current extension version: **1.0.2**
 - User-visible changes are tracked in [CHANGELOG.md](CHANGELOG.md).
 - Release/version rules and the release ZIP checklist are documented in [RELEASE.md](RELEASE.md).
 

@@ -182,12 +182,13 @@ $("#import_file").on("change", function () {
         throw new Error("Settings import must be a JSON object");
       }
 
-      const filtered = {};
+      const imported = {};
       for (const key of allSettingsKeys) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
-          filtered[key] = normalizeSettingValue(key, data[key]);
+          imported[key] = data[key];
         }
       }
+      const filtered = normalizeSettingsPatch(imported);
       if (!Object.keys(filtered).length) {
         throw new Error("Settings import does not contain supported keys");
       }

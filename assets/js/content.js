@@ -54,6 +54,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   let needsReprocess = false;
   const changedSettingKeys = [];
   const normalizedUpdates = {};
+  let preferredListKey = null;
 
   for (const [key, { newValue }] of Object.entries(changes)) {
     if (!isKnownSettingKey(key)) continue;
@@ -61,11 +62,24 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     const normalizedValue = normalizeSettingValue(key, newValue);
     settings[key] = normalizedValue;
     changedSettingKeys.push(key);
+    if (listSettingsKeys.includes(key)) {
+      preferredListKey = key;
+    }
 
     if (!settingsValueEquals(newValue, normalizedValue)) {
       normalizedUpdates[key] = normalizedValue;
     }
     if (reprocessKeys.has(key)) needsReprocess = true;
+  }
+
+  if (preferredListKey) {
+    const reconciled = normalizeSettingsData(settings, preferredListKey);
+    for (const key of listSettingsKeys) {
+      if (!settingsValueEquals(settings[key], reconciled[key])) {
+        settings[key] = reconciled[key];
+        normalizedUpdates[key] = reconciled[key];
+      }
+    }
   }
 
   if (Object.keys(normalizedUpdates).length) {
@@ -373,18 +387,10 @@ document.addEventListener("click", (e) => {
   const username = decodeURIComponent((blockBtn || wlBtn).dataset.username);
   if (!username) return;
 
-  if (blockBtn) {
-    const blocked = settings.blocked_users || [];
-    if (!blocked.some((u) => u.toLowerCase() === username.toLowerCase())) {
-      blocked.push(username);
-      chrome.storage.local.set({ blocked_users: blocked });
-    }
-  } else {
-    const whitelisted = settings.whitelisted_users || [];
-    if (!whitelisted.some((u) => u.toLowerCase() === username.toLowerCase())) {
-      whitelisted.push(username);
-      chrome.storage.local.set({ whitelisted_users: whitelisted });
-    }
+  const storageKey = blockBtn ? "blocked_users" : "whitelisted_users";
+  const updates = addUserToExclusiveList(storageKey, username, settings);
+  if (Object.keys(updates).length) {
+    chrome.storage.local.set(updates);
   }
 });
 

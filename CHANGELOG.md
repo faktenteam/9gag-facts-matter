@@ -8,6 +8,17 @@ This project follows [Semantic Versioning](https://semver.org/) for the extensio
 
 No unreleased changes yet.
 
+## [1.0.2] - 2026-05-15
+
+### Added
+
+- Added a small popup footer credit.
+
+### Fixed
+
+- Blocked and whitelisted user lists are now mutually exclusive.
+- Settings imports and existing stored lists are normalized to remove blocklist/whitelist conflicts.
+
 ## [1.0.1] - 2026-05-15
 
 ### Added
