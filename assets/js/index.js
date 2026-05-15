@@ -42,9 +42,14 @@ const textBindings = {
 };
 
 // Load all settings
-const allKeys = [...settingsKeys, ...listSettingsKeys];
-chrome.storage.local.get(allKeys, (data) => {
-  const d = Object.assign({}, defaultSettings, defaultListSettings, data);
+chrome.storage.local.get(allSettingsKeys, (data) => {
+  const d = normalizeSettingsData(data);
+  const needsSave = allSettingsKeys.some(
+    (key) => !settingsValueEquals(data[key], d[key]),
+  );
+  if (needsSave) {
+    chrome.storage.local.set(d);
+  }
 
   // Populate checkboxes
   for (const [elId, key] of Object.entries(checkboxBindings)) {
@@ -101,18 +106,19 @@ for (const [elId, key] of Object.entries(textBindings)) {
 
 // Render a user list with remove buttons
 function renderUserList(containerId, users, storageKey) {
+  const normalizedUsers = normalizeSettingValue(storageKey, users);
   const container = $(`#${containerId}`);
   container.empty();
-  if (!users.length) {
+  if (!normalizedUsers.length) {
     container.append('<em class="user-list-empty">None</em>');
     return;
   }
-  users.forEach((username) => {
+  normalizedUsers.forEach((username) => {
     const item = $('<div class="user-list-item"></div>');
     const nameSpan = $("<span></span>").text(username);
     const removeBtn = $('<button class="remove-user">&times;</button>');
     removeBtn.on("click", () => {
-      const updated = users.filter((u) => u !== username);
+      const updated = normalizedUsers.filter((u) => u !== username);
       chrome.storage.local.set({ [storageKey]: updated });
       renderUserList(containerId, updated, storageKey);
     });
@@ -122,18 +128,23 @@ function renderUserList(containerId, users, storageKey) {
 }
 
 // Listen for storage changes to update user lists in real-time
-chrome.storage.onChanged.addListener((changes) => {
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "local") return;
+
   if (changes.blocked_users) {
     renderUserList(
       "blocked_users_list",
-      changes.blocked_users.newValue || [],
+      normalizeSettingValue("blocked_users", changes.blocked_users.newValue),
       "blocked_users",
     );
   }
   if (changes.whitelisted_users) {
     renderUserList(
       "whitelisted_users_list",
-      changes.whitelisted_users.newValue || [],
+      normalizeSettingValue(
+        "whitelisted_users",
+        changes.whitelisted_users.newValue,
+      ),
       "whitelisted_users",
     );
   }
@@ -167,13 +178,20 @@ $("#import_file").on("change", function () {
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      const allKeys = [...settingsKeys, ...listSettingsKeys];
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        throw new Error("Settings import must be a JSON object");
+      }
+
       const filtered = {};
-      for (const key of allKeys) {
-        if (key in data) {
-          filtered[key] = data[key];
+      for (const key of allSettingsKeys) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          filtered[key] = normalizeSettingValue(key, data[key]);
         }
       }
+      if (!Object.keys(filtered).length) {
+        throw new Error("Settings import does not contain supported keys");
+      }
+
       chrome.storage.local.set(filtered, () => {
         location.reload();
       });

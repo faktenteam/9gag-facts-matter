@@ -12,15 +12,11 @@ if (typeof $ === "undefined") {
 
 // Promise to track when settings are loaded
 const settingsLoaded = new Promise((resolve) => {
-  const allKeys = [...settingsKeys, ...listSettingsKeys];
-  chrome.storage.local.get(allKeys, (data) => {
-    const merged = Object.assign(
-      {},
-      defaultSettings,
-      defaultListSettings,
-      data,
+  chrome.storage.local.get(allSettingsKeys, (data) => {
+    const merged = normalizeSettingsData(data);
+    const needsSave = allSettingsKeys.some(
+      (key) => !settingsValueEquals(data[key], merged[key]),
     );
-    const needsSave = allKeys.some((k) => data[k] === undefined);
     if (needsSave) {
       chrome.storage.local.set(merged);
     }
@@ -52,14 +48,31 @@ function queuePost(postElement) {
 
 let reprocessTimer = null;
 const reprocessKeys = new Set([...settingsKeys, ...listSettingsKeys]);
-chrome.storage.onChanged.addListener((changes) => {
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "local") return;
+
   let needsReprocess = false;
+  const changedSettingKeys = [];
+  const normalizedUpdates = {};
+
   for (const [key, { newValue }] of Object.entries(changes)) {
-    settings[key] = newValue;
+    if (!isKnownSettingKey(key)) continue;
+
+    const normalizedValue = normalizeSettingValue(key, newValue);
+    settings[key] = normalizedValue;
+    changedSettingKeys.push(key);
+
+    if (!settingsValueEquals(newValue, normalizedValue)) {
+      normalizedUpdates[key] = normalizedValue;
+    }
     if (reprocessKeys.has(key)) needsReprocess = true;
   }
+
+  if (Object.keys(normalizedUpdates).length) {
+    chrome.storage.local.set(normalizedUpdates);
+  }
   if (!needsReprocess) return;
-  log("Settings changed:", Object.keys(changes).join(", "));
+  log("Settings changed:", changedSettingKeys.join(", "));
   clearTimeout(reprocessTimer);
   reprocessTimer = setTimeout(reprocessAllPosts, 300);
 });
@@ -91,11 +104,35 @@ function reprocessAllPosts() {
 }
 
 let lastUrl = location.href;
+let navigationTimer = null;
+let scrollSaveTimer = null;
+
+function getScrollPath(url = location.href) {
+  try {
+    const parsedUrl = new URL(url, location.origin);
+    return parsedUrl.pathname + parsedUrl.search;
+  } catch (_err) {
+    return location.pathname + location.search;
+  }
+}
+
+function getScrollStorageKey(url = location.href) {
+  return "9gfm_scroll_" + getScrollPath(url);
+}
+
+function scheduleNavigationCheck() {
+  clearTimeout(navigationTimer);
+  navigationTimer = setTimeout(handleNavigation, 50);
+}
+
+function scheduleCurrentScrollSave() {
+  clearTimeout(scrollSaveTimer);
+  scrollSaveTimer = setTimeout(() => saveScrollPosition(location.href), 200);
+}
 
 function handleNavigation() {
   const currentUrl = location.href;
   if (currentUrl === lastUrl) return;
-  saveScrollPosition(lastUrl);
   lastUrl = currentUrl;
   log("Navigation detected →", currentUrl);
 
@@ -119,16 +156,46 @@ function handleNavigation() {
     .forEach((article) => queuePost(article));
 
   if (urlExcludes("/gag/") && urlExcludes("/u/")) {
-    restoreScrollPosition();
+    restoreScrollPosition(currentUrl);
   }
 }
 
-window.addEventListener("popstate", handleNavigation);
+function installNavigationListeners() {
+  const originalPushState = window.history.pushState;
+  const originalReplaceState = window.history.replaceState;
+
+  window.history.pushState = function (...args) {
+    saveScrollPosition(location.href);
+    const result = originalPushState.apply(this, args);
+    scheduleNavigationCheck();
+    return result;
+  };
+
+  window.history.replaceState = function (...args) {
+    saveScrollPosition(location.href);
+    const result = originalReplaceState.apply(this, args);
+    scheduleNavigationCheck();
+    return result;
+  };
+
+  window.addEventListener("popstate", scheduleNavigationCheck);
+  window.addEventListener("hashchange", scheduleNavigationCheck);
+}
+
+installNavigationListeners();
+window.addEventListener("scroll", scheduleCurrentScrollSave, { passive: true });
+
+// Content scripts can miss page-world history calls in some SPA setups.
+// A lightweight URL poller makes navigation detection deterministic.
+const navigationCheckInterval = setInterval(handleNavigation, 500);
+activeIntervals.push(navigationCheckInterval);
 
 // Detect SPA navigation via title changes (pushState)
 const titleEl = document.querySelector("title");
+let titleNavigationObserver = null;
 if (titleEl) {
-  new MutationObserver(() => handleNavigation()).observe(titleEl, {
+  titleNavigationObserver = new MutationObserver(scheduleNavigationCheck);
+  titleNavigationObserver.observe(titleEl, {
     childList: true,
     characterData: true,
     subtree: true,
@@ -149,24 +216,21 @@ function getTopVisibleArticle() {
   return null;
 }
 
-function saveScrollPosition(path) {
+function saveScrollPosition(url = location.href) {
   try {
     const data = {
       timestamp: Date.now(),
       articleId: getTopVisibleArticle(),
       scrollY: window.scrollY,
     };
-    sessionStorage.setItem(
-      "9gfm_scroll_" + (path || location.pathname),
-      JSON.stringify(data),
-    );
+    sessionStorage.setItem(getScrollStorageKey(url), JSON.stringify(data));
   } catch (_e) {
     /* quota exceeded or private mode */
   }
 }
 
-function restoreScrollPosition() {
-  const key = "9gfm_scroll_" + location.pathname;
+function restoreScrollPosition(url = location.href) {
+  const key = getScrollStorageKey(url);
   let saved;
   try {
     const raw = sessionStorage.getItem(key);
@@ -217,7 +281,7 @@ document.addEventListener(
         url.origin === location.origin &&
         url.pathname !== location.pathname
       ) {
-        saveScrollPosition();
+        saveScrollPosition(location.href);
       }
     } catch (_err) {
       /* invalid URL */
@@ -226,6 +290,47 @@ document.addEventListener(
   true,
 );
 
+let contentObserver = null;
+
+function shouldCollapseStreamContainers() {
+  return (
+    settings.hide_spammers || settings.more_downvotes || settings.min_days > 0
+  );
+}
+
+function handleAddedContent(addedNode) {
+  if (addedNode.nodeType !== Node.ELEMENT_NODE) return;
+
+  // Collapse stream-container height when hiding posts
+  if (
+    addedNode.matches?.(S.streamContainer) &&
+    shouldCollapseStreamContainers()
+  ) {
+    addedNode.classList.add("filtered");
+  }
+
+  // Queue individual articles for processing
+  if (addedNode.matches?.("article")) {
+    queuePost(addedNode);
+    return;
+  }
+
+  // Queue articles inside added containers (stream-container, list-view, etc.)
+  const articles = addedNode.querySelectorAll?.(S.unprocessed);
+  if (articles?.length) {
+    articles.forEach((article) => queuePost(article));
+  }
+}
+
+async function findContentRoot() {
+  const existingContainer = document.querySelector(S.container);
+  if (existingContainer) return existingContainer;
+
+  log("Init: waiting for container", S.container);
+  const delayedContainers = await waitForElement(S.container, 10000);
+  return delayedContainers?.[0] || document.body;
+}
+
 // Main initialization
 (async function initExtension() {
   await settingsLoaded;
@@ -233,47 +338,27 @@ document.addEventListener(
   // Validate DOM selectors and warn if 9GAG layout changed
   validateSelectors();
 
-  const containerElement = document.querySelector(S.container);
+  const contentRoot = await findContentRoot();
+  const hasContainer = contentRoot.matches?.(S.container) || false;
   log("Init: URL =", location.href);
-  log("Init: container found =", !!containerElement);
-
-  if (containerElement) {
-    document.body.classList.toggle("pf-active", urlExcludes("/u/"));
-
-    // Single observer: detect new articles and stream-containers as Vue renders them.
-    // This replaces the old chain of list-view → stream-container → article observers.
-    createAddObserver(
-      containerElement,
-      (addedNode) => {
-        if (addedNode.nodeType !== Node.ELEMENT_NODE) return;
-        // Collapse stream-container height when hiding posts
-        if (
-          addedNode.matches?.(S.streamContainer) &&
-          (settings.hide_spammers ||
-            settings.more_downvotes ||
-            settings.min_days > 0)
-        ) {
-          addedNode.classList.add("filtered");
-        }
-        // Queue individual articles for processing
-        if (addedNode.matches?.("article")) {
-          queuePost(addedNode);
-          return;
-        }
-        // Queue articles inside added containers (stream-container, list-view, etc.)
-        const articles = addedNode.querySelectorAll?.(S.unprocessed);
-        if (articles?.length) {
-          articles.forEach((article) => queuePost(article));
-        }
-      },
-      { childList: true, subtree: true },
-    );
-
-    // Process articles already in the DOM
-    document
-      .querySelectorAll(S.unprocessed)
-      .forEach((article) => queuePost(article));
+  log("Init: container found =", hasContainer);
+  if (!hasContainer) {
+    log("Init: using document.body fallback observer");
   }
+
+  document.body.classList.toggle("pf-active", urlExcludes("/u/"));
+
+  // Single observer: detect new articles and stream-containers as Vue renders them.
+  // Falls back to body if 9GAG creates #container after our content script starts.
+  contentObserver = createAddObserver(contentRoot, handleAddedContent, {
+    childList: true,
+    subtree: true,
+  });
+
+  // Process articles already in the DOM
+  document
+    .querySelectorAll(S.unprocessed)
+    .forEach((article) => queuePost(article));
 })();
 
 // Delegated click handlers for block/whitelist buttons
@@ -388,8 +473,14 @@ reapplyObserver.observe(document.querySelector(S.container) || document.body, {
 
 // Cleanup on page unload
 window.addEventListener("beforeunload", () => {
+  clearTimeout(navigationTimer);
+  clearTimeout(scrollSaveTimer);
+  saveScrollPosition(location.href);
+  window.removeEventListener("scroll", scheduleCurrentScrollSave);
   activeIntervals.forEach((interval) => clearInterval(interval));
   activeIntervals = [];
+  if (contentObserver) contentObserver.disconnect();
+  if (titleNavigationObserver) titleNavigationObserver.disconnect();
   reapplyObserver.disconnect();
   postIntersectionObserver.disconnect();
 });

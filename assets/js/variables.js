@@ -70,6 +70,73 @@ const defaultListSettings = {
   whitelisted_users: [],
 };
 
+const allSettingsKeys = [...settingsKeys, ...listSettingsKeys];
+const allSettingsKeySet = new Set(allSettingsKeys);
+
+function isKnownSettingKey(key) {
+  return allSettingsKeySet.has(key);
+}
+
+function normalizeStringList(value) {
+  if (!Array.isArray(value)) return [];
+
+  const seen = new Set();
+  return value
+    .filter((item) => typeof item === "string")
+    .map((item) => item.trim())
+    .filter((item) => {
+      if (!item) return false;
+      const normalized = item.toLowerCase();
+      if (seen.has(normalized)) return false;
+      seen.add(normalized);
+      return true;
+    });
+}
+
+function getDefaultSettingValue(key) {
+  if (listSettingsKeys.includes(key)) {
+    return [...defaultListSettings[key]];
+  }
+  return defaultSettings[key];
+}
+
+function normalizeSettingValue(key, value) {
+  if (listSettingsKeys.includes(key)) {
+    return normalizeStringList(value);
+  }
+
+  const fallback = defaultSettings[key];
+  if (typeof fallback === "boolean") {
+    return typeof value === "boolean" ? value : fallback;
+  }
+  if (typeof fallback === "number") {
+    const numberValue = typeof value === "number" ? value : parseInt(value, 10);
+    return Number.isFinite(numberValue) && numberValue >= 0
+      ? Math.floor(numberValue)
+      : fallback;
+  }
+  if (typeof fallback === "string") {
+    return typeof value === "string" ? value : fallback;
+  }
+  return fallback;
+}
+
+function normalizeSettingsData(data = {}) {
+  const normalized = {};
+  for (const key of allSettingsKeys) {
+    const hasValue = Object.prototype.hasOwnProperty.call(data, key);
+    normalized[key] = normalizeSettingValue(
+      key,
+      hasValue ? data[key] : getDefaultSettingValue(key),
+    );
+  }
+  return normalized;
+}
+
+function settingsValueEquals(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
 // Centralized DOM selectors for 9GAG elements.
 // If 9GAG redesigns their DOM, only this registry needs updating.
 // Some selectors have fallback arrays — use resolveSelector() to pick the first match.

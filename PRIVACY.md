@@ -1,6 +1,6 @@
 # Privacy Policy — 9GAG - facts matter
 
-**Last updated:** April 13, 2026
+**Last updated:** May 15, 2026
 
 ## Overview
 
@@ -8,7 +8,7 @@
 
 ## Data Collection
 
-**This extension does not collect, transmit, or store any personal data.**
+**This extension does not collect personal data for us and does not transmit your settings, lists, or cached data to servers owned by us.**
 
 - No analytics or tracking of any kind
 - No data is sent to external servers owned by us
@@ -20,14 +20,16 @@
 The extension stores the following data **locally in your browser** using the Chrome Storage API:
 
 - **User settings** (filter preferences, thresholds, keyword lists)
-- **Cached API responses** (publicly available 9GAG user data, cached temporarily to reduce network requests)
 - **User-managed lists** (blocked users, whitelisted users)
+- **Cached API responses** (publicly available 9GAG account/post metadata such as account creation timestamps and recent post vote counts, cached temporarily to reduce network requests)
 
-All data remains on your device and is never transmitted to any third party.
+This data remains on your device and is not sent to us or to any third-party server by the extension.
 
 ## Network Requests
 
-The extension makes requests **only** to `9gag.com` to retrieve publicly available user profile information (e.g., account creation date). These requests are made directly to 9GAG's public API — no proxy, no intermediary servers.
+The extension makes requests **only** to `9gag.com` to retrieve publicly available user profile/post information needed for filtering (for example account creation date and vote counts). These requests are made directly from your browser to 9GAG's public API — no proxy, no intermediary servers.
+
+Because these requests are sent to `9gag.com`, your browser may include your normal 9GAG session context, such as cookies, according to the browser's same-site rules. The extension does not read, store, or transmit those cookies itself.
 
 ## Permissions
 
