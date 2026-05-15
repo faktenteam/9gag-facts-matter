@@ -3,7 +3,8 @@
 // Debug logging
 const DEBUG = false;
 function log(...args) {
-  if (DEBUG) console.log('%c[9gag-fm]', 'color: #00ff88; font-weight: bold;', ...args);
+  if (DEBUG)
+    console.log("%c[9gag-fm]", "color: #00ff88; font-weight: bold;", ...args);
 }
 
 const CONSTANTS = {
@@ -21,14 +22,23 @@ let settings = {};
 const processedPosts = new WeakSet();
 let activeIntervals = [];
 
-
 const settingsKeys = [
-  "show_days", "min_days", "spammers", "spammers_hours", "cheers",
-  "more_downvotes", "hide_spammers", "always_display_upvotes",
-  "show_controls", "hide_meme",
-  "filter_keywords", "filter_tags",
+  "show_days",
+  "min_days",
+  "spammers",
+  "spammers_hours",
+  "cheers",
+  "more_downvotes",
+  "hide_spammers",
+  "always_display_upvotes",
+  "show_controls",
+  "hide_meme",
+  "filter_keywords",
+  "filter_tags",
   "hide_promoted",
-  "hide_videos", "hide_gifs", "hide_images",
+  "hide_videos",
+  "hide_gifs",
+  "hide_images",
   "hide_potz",
 ];
 
@@ -65,59 +75,61 @@ const defaultListSettings = {
 // Some selectors have fallback arrays — use resolveSelector() to pick the first match.
 const S = {
   // Containers
-  container: '#container',
-  listView: '#list-view-2',
-  listViewClass: 'list-view',
-  listViewContent: '.list-view__content',
-  streamContainer: '.stream-container',
+  container: "#container",
+  listView: "#list-view-2",
+  listViewClass: "list-view",
+  listViewContent: ".list-view__content",
+  streamContainer: ".stream-container",
 
   // Post header / creator
-  postCreator: '.ui-post-creator',
-  postCreatorAuthor: '.ui-post-creator__author',
-  postHeaderLeft: '.post-header__left',
-  postMetaMobile: '.post-meta.mobile',
+  postCreator: ".ui-post-creator",
+  postCreatorAuthor: ".ui-post-creator__author",
+  postHeaderLeft: ".post-header__left",
+  postMetaMobile: ".post-meta.mobile",
   creatorUserLink: '.creator a[href*="/u/"]',
   anyUserLink: 'a[href*="/u/"]',
-  headerLinks: 'header a',
+  headerLinks: "header a",
 
   // Post content
-  postAward: '.post-award',
-  postAwardUsers: '.post-award-users',
-  createMemeBtn: '.create-meme-btn',
-  potzBadge: '.potz-badge',
-  postTitle: 'header h1, header h2, .post-title',
+  postAward: ".post-award",
+  postAwardUsers: ".post-award-users",
+  createMemeBtn: ".create-meme-btn",
+  potzBadge: ".potz-badge",
+  postTitle: "header h1, header h2, .post-title",
   postTags: 'a[href*="/tag/"]',
-  promotedIndicator: '.badge-is-promoted, .promoted-badge, [data-is-promoted="true"]',
+  promotedIndicator:
+    '.badge-is-promoted, .promoted-badge, [data-is-promoted="true"]',
 
   // Voting
-  upvote: '.upvote',
-  postVote: '.post-vote',
-  downvoteGrouped: '.downvote.grouped',
+  upvote: ".upvote",
+  postVote: ".post-vote",
+  downvoteGrouped: ".downvote.grouped",
 
   // Media type detection
   videoPost: 'video, .post-video source[type*="video"]',
   gifPost: '.post-gif, img[src*=".gif"], picture source[type="image/webp"]',
 
   // Menu (username extraction fallback)
-  popupMenu: '.uikit-popup-menu',
-  menuButton: '.button',
-  menuLinks: '.menu a',
+  popupMenu: ".uikit-popup-menu",
+  menuButton: ".button",
+  menuLinks: ".menu a",
 
   // Our injected content
-  injectedAll: '.pf-info, .spammer-label, .days-label, .post-vote__text.downvote, .user-link',
-  userLink: '.pf-user, .user-link',
+  injectedAll:
+    ".pf-info, .spammer-label, .days-label, .post-vote__text.downvote, .user-link",
+  userLink: ".pf-user, .user-link",
 
   // Article states
-  unprocessed: 'article:not(.pf-processed):not(.filtering)',
-  processed: 'article.pf-processed, article.filtering',
+  unprocessed: "article:not(.pf-processed):not(.filtering)",
+  processed: "article.pf-processed, article.filtering",
 };
 
 // Validate critical selectors on startup and warn about missing ones
 function validateSelectors() {
   const critical = [
-    ['container', S.container],
-    ['listView', S.listView],
-    ['streamContainer', S.streamContainer],
+    ["container", S.container],
+    ["listView", S.listView],
+    ["streamContainer", S.streamContainer],
   ];
   const warnings = [];
   for (const [name, selector] of critical) {
@@ -126,8 +138,11 @@ function validateSelectors() {
     }
   }
   if (warnings.length) {
-    console.warn('[9gag-fm] Missing DOM elements for selectors:', warnings.join(', '),
-      '— 9GAG may have changed their layout. Some features may not work.');
+    console.warn(
+      "[9gag-fm] Missing DOM elements for selectors:",
+      warnings.join(", "),
+      "— 9GAG may have changed their layout. Some features may not work.",
+    );
   }
   return warnings;
 }

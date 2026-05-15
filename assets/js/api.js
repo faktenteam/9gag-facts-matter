@@ -12,26 +12,31 @@ let errorBannerShown = false;
 function trackApiError() {
   apiErrorCount++;
   if (apiErrorCount >= 3 && !errorBannerShown) {
-    showErrorBanner(`9GAG Filter: Could not check ${apiErrorCount} posts (API errors or rate limit)`);
+    showErrorBanner(
+      `9GAG Filter: Could not check ${apiErrorCount} posts (API errors or rate limit)`,
+    );
     errorBannerShown = true;
   }
 }
 
 function showErrorBanner(message) {
   // Remove existing banner if any
-  const existing = document.getElementById('9gag-fm-error-banner');
+  const existing = document.getElementById("9gag-fm-error-banner");
   if (existing) existing.remove();
 
-  const banner = document.createElement('div');
-  banner.id = '9gag-fm-error-banner';
-  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#e53935;color:#fff;padding:8px 16px;font-size:13px;text-align:center;cursor:pointer;font-family:sans-serif;';
+  const banner = document.createElement("div");
+  banner.id = "9gag-fm-error-banner";
+  banner.style.cssText =
+    "position:fixed;top:0;left:0;right:0;z-index:99999;background:#e53935;color:#fff;padding:8px 16px;font-size:13px;text-align:center;cursor:pointer;font-family:sans-serif;";
   banner.textContent = message;
-  banner.title = 'Click to dismiss';
-  banner.addEventListener('click', () => banner.remove());
+  banner.title = "Click to dismiss";
+  banner.addEventListener("click", () => banner.remove());
   document.body.appendChild(banner);
 
   // Auto-dismiss after 10 seconds
-  setTimeout(() => { if (banner.parentNode) banner.remove(); }, 10000);
+  setTimeout(() => {
+    if (banner.parentNode) banner.remove();
+  }, 10000);
 }
 
 // Concurrency-limited request queue to avoid rate limiting
@@ -86,7 +91,12 @@ function setCachedUserData(username, apiJson) {
   // Persist minimized data to chrome.storage.local for cross-tab / reload reuse
   const storageEntry = {
     profile: { creationTs: d.profile.creationTs },
-    posts: d.posts.map(p => ({ id: p.id, creationTs: p.creationTs, upVoteCount: p.upVoteCount, downVoteCount: p.downVoteCount })),
+    posts: d.posts.map((p) => ({
+      id: p.id,
+      creationTs: p.creationTs,
+      upVoteCount: p.upVoteCount,
+      downVoteCount: p.downVoteCount,
+    })),
     timestamp: entry.timestamp,
   };
   chrome.storage.local.set({ [`uc_${username}`]: storageEntry });
@@ -112,26 +122,29 @@ async function getCachedUserDataPersistent(username) {
 }
 
 async function doFetch(username) {
-  const response = await fetch(`https://9gag.com/v1/user-posts/username/${encodeURIComponent(username)}/type/posts`, {
-    headers: {
-      accept: "*/*",
-      "accept-language": "en-US,en;q=0.5",
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
+  const response = await fetch(
+    `https://9gag.com/v1/user-posts/username/${encodeURIComponent(username)}/type/posts`,
+    {
+      headers: {
+        accept: "*/*",
+        "accept-language": "en-US,en;q=0.5",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+      },
+      referrer: "https://9gag.com",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
     },
-    referrer: "https://9gag.com",
-    referrerPolicy: "strict-origin-when-cross-origin",
-    method: "POST",
-    mode: "cors",
-    credentials: "include",
-  });
+  );
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
-  const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('json')) {
-    throw new Error('Rate limited (non-JSON response)');
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("json")) {
+    throw new Error("Rate limited (non-JSON response)");
   }
   return response.json();
 }
@@ -155,8 +168,12 @@ async function fetchUserData(username) {
       for (let attempt = 0; attempt <= CONSTANTS.MAX_FETCH_RETRIES; attempt++) {
         try {
           if (attempt > 0) {
-            log(`Retry ${attempt}/${CONSTANTS.MAX_FETCH_RETRIES} for ${username}`);
-            await new Promise(r => setTimeout(r, CONSTANTS.RETRY_DELAY * attempt));
+            log(
+              `Retry ${attempt}/${CONSTANTS.MAX_FETCH_RETRIES} for ${username}`,
+            );
+            await new Promise((r) =>
+              setTimeout(r, CONSTANTS.RETRY_DELAY * attempt),
+            );
           }
           const json = await doFetch(username);
           setCachedUserData(username, json);
@@ -164,7 +181,10 @@ async function fetchUserData(username) {
           return getCachedUserData(username);
         } catch (error) {
           if (attempt === CONSTANTS.MAX_FETCH_RETRIES) {
-            log(`Failed to fetch ${username} after ${attempt + 1} attempts:`, error.message);
+            log(
+              `Failed to fetch ${username} after ${attempt + 1} attempts:`,
+              error.message,
+            );
             trackApiError();
             return null;
           }

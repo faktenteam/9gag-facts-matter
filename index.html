@@ -1,113 +1,182 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>9GAG - facts matter</title>
-        <link rel="stylesheet" href="assets/css/pico.jade.css" />
-        <link rel="stylesheet" href="assets/css/index.css" />
-    </head>
-    <body>
-        <main class="container">
-            <nav class="tabs">
-                <button class="tab active" data-tab="filters">Filters</button>
-                <button class="tab" data-tab="lists">Lists</button>
-                <button class="tab" data-tab="settings">&#9881;</button>
-            </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <title>9GAG - facts matter</title>
+    <link rel="stylesheet" href="assets/css/pico.jade.css" />
+    <link rel="stylesheet" href="assets/css/index.css" />
+  </head>
+  <body>
+    <main class="container">
+      <nav class="tabs">
+        <button class="tab active" data-tab="filters">Filters</button>
+        <button class="tab" data-tab="lists">Lists</button>
+        <button class="tab" data-tab="settings">&#9881;</button>
+      </nav>
 
-            <section id="tab-filters" class="tab-content active">
-                <fieldset>
-                    <legend>Spam Detection</legend>
-                    <div class="grid">
-                        <div>Mark spammers</div>
-                        <div><input type="checkbox" id="spammers_checkbox" role="switch" /></div>
+      <section id="tab-filters" class="tab-content active">
+        <fieldset>
+          <legend>Spam Detection</legend>
+          <div class="grid">
+            <div>Mark spammers</div>
+            <div>
+              <input type="checkbox" id="spammers_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide spammers</div>
-                        <div><input type="checkbox" id="hide_spammers_checkbox" role="switch" /></div>
+            <div>Hide spammers</div>
+            <div>
+              <input
+                type="checkbox"
+                id="hide_spammers_checkbox"
+                role="switch"
+              />
+            </div>
 
-                        <div>Spammer threshold (hours)</div>
-                        <div><input type="number" id="spammers_input" placeholder="12" min="0" /></div>
+            <div>Spammer threshold (hours)</div>
+            <div>
+              <input
+                type="number"
+                id="spammers_input"
+                placeholder="12"
+                min="0"
+              />
+            </div>
 
-                        <div>Minimum account age (days)</div>
-                        <div><input type="number" id="days_input" placeholder="300" min="0" /></div>
-                    </div>
-                </fieldset>
+            <div>Minimum account age (days)</div>
+            <div>
+              <input type="number" id="days_input" placeholder="300" min="0" />
+            </div>
+          </div>
+        </fieldset>
 
-                <fieldset>
-                    <legend>Content Filters</legend>
-                    <div class="grid">
-                        <div>Hide promoted posts</div>
-                        <div><input type="checkbox" id="hide_promoted_checkbox" role="switch" /></div>
+        <fieldset>
+          <legend>Content Filters</legend>
+          <div class="grid">
+            <div>Hide promoted posts</div>
+            <div>
+              <input
+                type="checkbox"
+                id="hide_promoted_checkbox"
+                role="switch"
+              />
+            </div>
 
-                        <div>Hide posts with more downvotes</div>
-                        <div><input type="checkbox" id="more_downvotes_checkbox" role="switch" /></div>
+            <div>Hide posts with more downvotes</div>
+            <div>
+              <input
+                type="checkbox"
+                id="more_downvotes_checkbox"
+                role="switch"
+              />
+            </div>
 
-                        <div>Hide cheers badges</div>
-                        <div><input type="checkbox" id="cheers_checkbox" role="switch" /></div>
+            <div>Hide cheers badges</div>
+            <div>
+              <input type="checkbox" id="cheers_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide create meme button</div>
-                        <div><input type="checkbox" id="hide_meme_checkbox" role="switch" /></div>
+            <div>Hide create meme button</div>
+            <div>
+              <input type="checkbox" id="hide_meme_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide meme badges</div>
-                        <div><input type="checkbox" id="hide_potz_checkbox" role="switch" /></div>
+            <div>Hide meme badges</div>
+            <div>
+              <input type="checkbox" id="hide_potz_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide video posts</div>
-                        <div><input type="checkbox" id="hide_videos_checkbox" role="switch" /></div>
+            <div>Hide video posts</div>
+            <div>
+              <input type="checkbox" id="hide_videos_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide GIF posts</div>
-                        <div><input type="checkbox" id="hide_gifs_checkbox" role="switch" /></div>
+            <div>Hide GIF posts</div>
+            <div>
+              <input type="checkbox" id="hide_gifs_checkbox" role="switch" />
+            </div>
 
-                        <div>Hide image-only posts</div>
-                        <div><input type="checkbox" id="hide_images_checkbox" role="switch" /></div>
-                    </div>
+            <div>Hide image-only posts</div>
+            <div>
+              <input type="checkbox" id="hide_images_checkbox" role="switch" />
+            </div>
+          </div>
 
-                    <label for="filter_keywords_input" class="field-label">Filter keywords (comma-separated)</label>
-                    <textarea id="filter_keywords_input" rows="2" placeholder="e.g. crypto, nft, ad"></textarea>
+          <label for="filter_keywords_input" class="field-label"
+            >Filter keywords (comma-separated)</label
+          >
+          <textarea
+            id="filter_keywords_input"
+            rows="2"
+            placeholder="e.g. crypto, nft, ad"
+          ></textarea>
 
-                    <label for="filter_tags_input" class="field-label">Filter tags (comma-separated)</label>
-                    <textarea id="filter_tags_input" rows="2" placeholder="e.g. politics, nsfw"></textarea>
-                </fieldset>
+          <label for="filter_tags_input" class="field-label"
+            >Filter tags (comma-separated)</label
+          >
+          <textarea
+            id="filter_tags_input"
+            rows="2"
+            placeholder="e.g. politics, nsfw"
+          ></textarea>
+        </fieldset>
 
-                <fieldset>
-                    <legend>Display</legend>
-                    <div class="grid">
-                        <div>Show account age</div>
-                        <div><input type="checkbox" id="days_checkbox" role="switch" /></div>
+        <fieldset>
+          <legend>Display</legend>
+          <div class="grid">
+            <div>Show account age</div>
+            <div>
+              <input type="checkbox" id="days_checkbox" role="switch" />
+            </div>
 
-                        <div>Always display upvotes</div>
-                        <div><input type="checkbox" id="always_display_upvotes_checkbox" role="switch" /></div>
+            <div>Always display upvotes</div>
+            <div>
+              <input
+                type="checkbox"
+                id="always_display_upvotes_checkbox"
+                role="switch"
+              />
+            </div>
 
-                        <div>Show video controls</div>
-                        <div><input type="checkbox" id="show_controls_checkbox" role="switch" /></div>
-                    </div>
-                </fieldset>
-            </section>
+            <div>Show video controls</div>
+            <div>
+              <input
+                type="checkbox"
+                id="show_controls_checkbox"
+                role="switch"
+              />
+            </div>
+          </div>
+        </fieldset>
+      </section>
 
-            <section id="tab-lists" class="tab-content">
-                <fieldset>
-                    <legend>Blocked Users</legend>
-                    <div id="blocked_users_list" class="user-list"></div>
-                </fieldset>
+      <section id="tab-lists" class="tab-content">
+        <fieldset>
+          <legend>Blocked Users</legend>
+          <div id="blocked_users_list" class="user-list"></div>
+        </fieldset>
 
-                <fieldset>
-                    <legend>Whitelisted Users</legend>
-                    <div id="whitelisted_users_list" class="user-list"></div>
-                </fieldset>
-            </section>
+        <fieldset>
+          <legend>Whitelisted Users</legend>
+          <div id="whitelisted_users_list" class="user-list"></div>
+        </fieldset>
+      </section>
 
-            <section id="tab-settings" class="tab-content">
-                <fieldset>
-                    <legend>Export / Import</legend>
-                    <p class="settings-hint">Backup your settings or restore from a previous export.</p>
-                    <div class="button-row">
-                        <button id="export_btn" class="secondary">Export</button>
-                        <button id="import_btn" class="secondary">Import</button>
-                    </div>
-                    <input type="file" id="import_file" accept=".json" hidden />
-                </fieldset>
-            </section>
-        </main>
-        <script src="assets/js/cash.js"></script>
-        <script src="assets/js/variables.js"></script>
-        <script src="assets/js/index.js"></script>
-    </body>
+      <section id="tab-settings" class="tab-content">
+        <fieldset>
+          <legend>Export / Import</legend>
+          <p class="settings-hint">
+            Backup your settings or restore from a previous export.
+          </p>
+          <div class="button-row">
+            <button id="export_btn" class="secondary">Export</button>
+            <button id="import_btn" class="secondary">Import</button>
+          </div>
+          <input type="file" id="import_file" accept=".json" hidden />
+        </fieldset>
+      </section>
+    </main>
+    <script src="assets/js/cash.js"></script>
+    <script src="assets/js/variables.js"></script>
+    <script src="assets/js/index.js"></script>
+  </body>
 </html>

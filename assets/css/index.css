@@ -1,143 +1,144 @@
 .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  align-items: center;
 }
 
 main.container {
-    height: 100%;
-    overflow-y: auto;
-    padding: 0 1rem 1rem;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 1rem 1rem;
 }
 
 html,
 body {
-    width: 480px;
-    height: 560px;
-    margin: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+  width: 480px;
+  height: 560px;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Tabs */
 .tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 2px solid var(--pico-primary);
-    margin-bottom: 0.75rem;
-    position: sticky;
-    top: 0;
-    background: var(--pico-background-color);
-    z-index: 10;
-    padding-top: 0.5rem;
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--pico-primary);
+  margin-bottom: 0.75rem;
+  position: sticky;
+  top: 0;
+  background: var(--pico-background-color);
+  z-index: 10;
+  padding-top: 0.5rem;
 }
 
 .tab {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--pico-muted-color);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: color 0.15s, border-color 0.15s;
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pico-muted-color);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .tab:hover {
-    color: var(--pico-primary);
+  color: var(--pico-primary);
 }
 
 .tab.active {
-    color: var(--pico-primary);
-    border-bottom-color: var(--pico-primary);
+  color: var(--pico-primary);
+  border-bottom-color: var(--pico-primary);
 }
 
 .tab-content {
-    display: none;
+  display: none;
 }
 
 .tab-content.active {
-    display: block;
+  display: block;
 }
 
 /* Fieldsets */
 fieldset {
-    border: 1px solid var(--pico-muted-border-color);
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 legend {
-    font-weight: 600;
-    font-size: 13px;
-    padding: 0 0.4rem;
-    color: var(--pico-primary);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0 0.4rem;
+  color: var(--pico-primary);
 }
 
 .field-label {
-    font-size: 13px;
-    margin-top: 0.5rem;
-    margin-bottom: 0.25rem;
-    display: block;
+  font-size: 13px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  display: block;
 }
 
 textarea {
-    width: 100%;
-    resize: vertical;
-    font-size: 12px;
+  width: 100%;
+  resize: vertical;
+  font-size: 12px;
 }
 
 /* User lists */
 .user-list {
-    max-height: 200px;
-    overflow-y: auto;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .user-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    font-size: 13px;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
 .user-list-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .user-list-item .remove-user {
-    background: none;
-    border: none;
-    color: red;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0 4px;
-    line-height: 1;
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
 }
 
 .user-list-empty {
-    opacity: 0.5;
-    font-size: 12px;
+  opacity: 0.5;
+  font-size: 12px;
 }
 
 /* Settings tab */
 .settings-hint {
-    font-size: 12px;
-    margin-bottom: 0.5rem;
+  font-size: 12px;
+  margin-bottom: 0.5rem;
 }
 
 .button-row {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .button-row button {
-    flex: 1;
+  flex: 1;
 }
-

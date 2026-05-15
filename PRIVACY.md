@@ -31,9 +31,9 @@ The extension makes requests **only** to `9gag.com` to retrieve publicly availab
 
 ## Permissions
 
-| Permission | Purpose |
-|---|---|
-| `storage` | Save user settings and cache data locally |
+| Permission                             | Purpose                                                           |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| `storage`                              | Save user settings and cache data locally                         |
 | `host_permissions: https://9gag.com/*` | Access 9GAG pages to filter content and retrieve public user data |
 
 ## Third-Party Libraries

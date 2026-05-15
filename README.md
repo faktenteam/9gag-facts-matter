@@ -10,25 +10,25 @@
 
 ## ✨ Features
 
-| Feature | Description |
-|---|---|
-| 📅 **Show Account Age** | Displays account age (in days) next to the username |
-| 🔞 **Minimum Account Age** | Hides posts from accounts younger than X days |
-| 🚨 **Spammer Detection** | Flags users as spammers if they post too frequently within a given timeframe (hours) |
-| 🙈 **Hide Spammers** | Completely hides posts from detected spammers |
-| 👎 **Downvote Filter** | Hides posts with more downvotes than upvotes |
-| 🎉 **Hide Cheers** | Removes cheers elements from the feed |
-| 📊 **Always Show Upvotes** | Always displays the upvote count |
-| 🎬 **Show Video Controls** | Enables native video controls (play, pause, volume, etc.) |
-| 🖼️ **Hide "Create Meme" Button** | Removes the "Create Meme" button |
-| 🏷️ **Hide Meme Badges** | Hides Potz badges on posts |
-| 📢 **Hide Promoted Posts** | Filters out sponsored/promoted posts from the feed |
-| 🔤 **Keyword Filter** | Hides posts based on keywords in the title |
-| 🏷️ **Tag Filter** | Hides posts based on specific tags |
-| 🎥 **Media Type Filter** | Filters by video, GIF, or image posts |
-| 🚫 **Block Users** | Block individual users directly from the feed |
-| ✅ **Whitelist** | Whitelist trusted users to bypass filters |
-| 💾 **Export / Import** | Back up and restore your settings |
+| Feature                          | Description                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| 📅 **Show Account Age**          | Displays account age (in days) next to the username                                  |
+| 🔞 **Minimum Account Age**       | Hides posts from accounts younger than X days                                        |
+| 🚨 **Spammer Detection**         | Flags users as spammers if they post too frequently within a given timeframe (hours) |
+| 🙈 **Hide Spammers**             | Completely hides posts from detected spammers                                        |
+| 👎 **Downvote Filter**           | Hides posts with more downvotes than upvotes                                         |
+| 🎉 **Hide Cheers**               | Removes cheers elements from the feed                                                |
+| 📊 **Always Show Upvotes**       | Always displays the upvote count                                                     |
+| 🎬 **Show Video Controls**       | Enables native video controls (play, pause, volume, etc.)                            |
+| 🖼️ **Hide "Create Meme" Button** | Removes the "Create Meme" button                                                     |
+| 🏷️ **Hide Meme Badges**          | Hides Potz badges on posts                                                           |
+| 📢 **Hide Promoted Posts**       | Filters out sponsored/promoted posts from the feed                                   |
+| 🔤 **Keyword Filter**            | Hides posts based on keywords in the title                                           |
+| 🏷️ **Tag Filter**                | Hides posts based on specific tags                                                   |
+| 🎥 **Media Type Filter**         | Filters by video, GIF, or image posts                                                |
+| 🚫 **Block Users**               | Block individual users directly from the feed                                        |
+| ✅ **Whitelist**                 | Whitelist trusted users to bypass filters                                            |
+| 💾 **Export / Import**           | Back up and restore your settings                                                    |
 
 ---
 

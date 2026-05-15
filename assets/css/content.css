@@ -1,126 +1,128 @@
 .sound-toggle {
-    top: 2px !important;
-    right: 5px !important;
-    left: auto !important;
+  top: 2px !important;
+  right: 5px !important;
+  left: auto !important;
 }
 
 .post-meta.mobile {
-    line-height: 50%;
-    margin-bottom: 0.5rem;
+  line-height: 50%;
+  margin-bottom: 0.5rem;
 }
 
 .downvote {
-    font-weight: bold;
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--palette-text-normal);
-    text-align: center;
-    padding: 0 3px;
-    min-width: 2ch;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--palette-text-normal);
+  text-align: center;
+  padding: 0 3px;
+  min-width: 2ch;
 }
 
 /* Unified post-filter info bar */
 .pf-info {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: 8px;
-    font-size: 12px;
-    line-height: 1;
-    vertical-align: middle;
-    color: #999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  font-size: 12px;
+  line-height: 1;
+  vertical-align: middle;
+  color: #999;
 }
 
 .pf-info::before {
-    content: '';
-    display: inline-block;
-    width: 1px;
-    height: 12px;
-    background: #444;
-    flex-shrink: 0;
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: #444;
+  flex-shrink: 0;
 }
 
 .pf-user {
-    color: #7c9cbf;
-    text-decoration: none;
-    font-weight: 500;
+  color: #7c9cbf;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .pf-user:hover {
-    color: #aac8e4;
-    text-decoration: underline;
+  color: #aac8e4;
+  text-decoration: underline;
 }
 
 .pf-age {
-    color: #888;
-    display: none;
+  color: #888;
+  display: none;
 }
 
 .pf-spam {
-    color: #ff4444;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    background: rgba(255, 68, 68, 0.12);
-    padding: 1px 5px;
-    border-radius: 3px;
-    display: none;
+  color: #ff4444;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(255, 68, 68, 0.12);
+  padding: 1px 5px;
+  border-radius: 3px;
+  display: none;
 }
 
 .pf-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 2px;
 }
 
 .pf-block-btn,
 .pf-wl-btn {
-    cursor: pointer;
-    font-size: 14px;
-    opacity: 0.3;
-    transition: opacity 0.15s, color 0.15s;
-    user-select: none;
-    line-height: 1;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.3;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+  user-select: none;
+  line-height: 1;
 }
 
 .pf-block-btn:hover {
-    opacity: 1;
-    color: #ff4444;
+  opacity: 1;
+  color: #ff4444;
 }
 
 .pf-wl-btn:hover {
-    opacity: 1;
-    color: #ffd700;
+  opacity: 1;
+  color: #ffd700;
 }
 
 /* Legacy fallback labels */
 .spammer-label {
-    color: #ff4444;
-    font-weight: 700;
-    font-size: 11px;
-    background: rgba(255, 68, 68, 0.12);
-    padding: 1px 5px;
-    border-radius: 3px;
+  color: #ff4444;
+  font-weight: 700;
+  font-size: 11px;
+  background: rgba(255, 68, 68, 0.12);
+  padding: 1px 5px;
+  border-radius: 3px;
 }
 
 .days-label {
-    color: #888;
-    font-size: 12px;
-    margin-left: 6px;
+  color: #888;
+  font-size: 12px;
+  margin-left: 6px;
 }
 
 .stream-container.filtered {
-    min-height: auto !important;
+  min-height: auto !important;
 }
 
 /* Prevent flash of unfiltered content — only when extension is active */
 body.pf-active article:not(.pf-processed):not(.filtering) {
-    opacity: 0;
-    transition: opacity 0.15s ease;
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 body.pf-active article.pf-processed,
 body.pf-active article.filtering {
-    opacity: 1;
+  opacity: 1;
 }
