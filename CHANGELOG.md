@@ -6,6 +6,10 @@ This project follows [Semantic Versioning](https://semver.org/) for the extensio
 
 ## [Unreleased]
 
+No unreleased changes yet.
+
+## [1.0.1] - 2026-05-15
+
 ### Added
 
 - Release/version process documentation in `RELEASE.md`.
