@@ -1,3 +1,46 @@
+:root,
+:root:not([data-theme]),
+:root:not([data-theme="dark"]),
+:root[data-theme="dark"] {
+  --pf-9gag-background: #111;
+  --pf-9gag-surface: #151515;
+  --pf-9gag-control: #1c1c1c;
+  --pf-9gag-control-active: #8a8a8a;
+  --pf-9gag-button-hover: #2b2b2b;
+  --pf-9gag-button-active: #363636;
+  --pf-9gag-button-border-hover: #5c5c5c;
+  --pf-9gag-line: #333;
+  --pf-9gag-line-soft: #242424;
+  --pf-9gag-text: #f5f5f5;
+  --pf-9gag-muted: #8a8a8a;
+  --pf-9gag-danger: #ff5a5f;
+
+  --pico-background-color: var(--pf-9gag-background);
+  --pico-color: var(--pf-9gag-text);
+  --pico-muted-color: var(--pf-9gag-muted);
+  --pico-muted-border-color: var(--pf-9gag-line);
+  --pico-primary: var(--pf-9gag-text);
+  --pico-primary-background: var(--pf-9gag-text);
+  --pico-primary-border: var(--pf-9gag-text);
+  --pico-primary-underline: rgba(245, 245, 245, 0.55);
+  --pico-primary-hover: #fff;
+  --pico-primary-hover-background: #fff;
+  --pico-primary-hover-border: #fff;
+  --pico-primary-hover-underline: rgba(255, 255, 255, 0.7);
+  --pico-primary-focus: rgba(255, 255, 255, 0.2);
+  --pico-secondary-focus: rgba(255, 255, 255, 0.2);
+  --pico-contrast-focus: rgba(255, 255, 255, 0.2);
+  --pico-primary-inverse: #111;
+  --pico-switch-checked-background-color: var(--pf-9gag-control-active);
+  --pico-form-element-background-color: var(--pf-9gag-control);
+  --pico-form-element-border-color: var(--pf-9gag-line);
+  --pico-form-element-color: var(--pf-9gag-text);
+  --pico-form-element-placeholder-color: var(--pf-9gag-muted);
+  --pico-form-element-active-background-color: var(--pf-9gag-control);
+  --pico-form-element-active-border-color: var(--pf-9gag-text);
+  --pico-form-element-focus-color: var(--pico-primary-focus);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -15,20 +58,23 @@ html,
 body {
   width: 480px;
   height: 560px;
+  background: var(--pf-9gag-background);
+  color: var(--pf-9gag-text);
   margin: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-color: var(--pf-9gag-line) var(--pf-9gag-background);
 }
 
 /* Tabs */
 .tabs {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid var(--pico-primary);
+  border-bottom: 1px solid var(--pf-9gag-line);
   margin-bottom: 0.75rem;
   position: sticky;
   top: 0;
-  background: var(--pico-background-color);
+  background: var(--pf-9gag-background);
   z-index: 10;
   padding-top: 0.5rem;
 }
@@ -41,21 +87,30 @@ body {
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  color: var(--pico-muted-color);
+  color: var(--pf-9gag-muted);
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -1px;
   transition:
     color 0.15s,
     border-color 0.15s;
 }
 
 .tab:hover {
-  color: var(--pico-primary);
+  color: var(--pf-9gag-text);
 }
 
 .tab.active {
-  color: var(--pico-primary);
-  border-bottom-color: var(--pico-primary);
+  color: var(--pf-9gag-text);
+  border-bottom-color: var(--pf-9gag-text);
+}
+
+.tab:focus {
+  box-shadow: none;
+}
+
+.tab:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
 }
 
 .tab-content {
@@ -68,7 +123,8 @@ body {
 
 /* Fieldsets */
 fieldset {
-  border: 1px solid var(--pico-muted-border-color);
+  background: var(--pf-9gag-background);
+  border: 1px solid var(--pf-9gag-line);
   border-radius: 8px;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
@@ -78,7 +134,7 @@ legend {
   font-weight: 600;
   font-size: 13px;
   padding: 0 0.4rem;
-  color: var(--pico-primary);
+  color: var(--pf-9gag-text);
 }
 
 .field-label {
@@ -94,6 +150,36 @@ textarea {
   font-size: 12px;
 }
 
+input,
+textarea {
+  background-color: var(--pf-9gag-control);
+  border-color: var(--pf-9gag-line);
+  color: var(--pf-9gag-text);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--pf-9gag-text);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+  outline: none;
+}
+
+input[type="checkbox"][role="switch"] {
+  background-color: var(--pf-9gag-line);
+  border-color: var(--pf-9gag-line);
+}
+
+input[type="checkbox"][role="switch"]:checked {
+  background-color: var(--pf-9gag-control-active);
+  border-color: var(--pf-9gag-control-active);
+}
+
+input[type="checkbox"][role="switch"]:focus,
+button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+  outline: none;
+}
+
 /* User lists */
 .user-list {
   max-height: 200px;
@@ -106,7 +192,7 @@ textarea {
   align-items: center;
   padding: 4px 0;
   font-size: 13px;
-  border-bottom: 1px solid var(--pico-muted-border-color);
+  border-bottom: 1px solid var(--pf-9gag-line-soft);
 }
 
 .user-list-item:last-child {
@@ -116,7 +202,7 @@ textarea {
 .user-list-item .remove-user {
   background: none;
   border: none;
-  color: red;
+  color: var(--pf-9gag-danger);
   cursor: pointer;
   font-size: 16px;
   padding: 0 4px;
@@ -143,10 +229,29 @@ textarea {
   flex: 1;
 }
 
+.button-row button.secondary {
+  background: var(--pf-9gag-control);
+  border-color: var(--pf-9gag-line);
+  color: var(--pf-9gag-text);
+}
+
+.button-row button.secondary:hover,
+.button-row button.secondary:focus {
+  background: var(--pf-9gag-button-hover);
+  border-color: var(--pf-9gag-button-border-hover);
+  color: var(--pf-9gag-text);
+}
+
+.button-row button.secondary:active {
+  background: var(--pf-9gag-button-active);
+  border-color: var(--pf-9gag-muted);
+  color: var(--pf-9gag-text);
+}
+
 /* Footer */
 .popup-footer {
-  border-top: 1px solid var(--pico-muted-border-color);
-  color: var(--pico-muted-color);
+  border-top: 1px solid var(--pf-9gag-line);
+  color: var(--pf-9gag-muted);
   font-size: 11px;
   letter-spacing: 0.02em;
   margin-top: 1rem;
@@ -155,6 +260,6 @@ textarea {
 }
 
 .popup-footer span {
-  color: var(--pico-primary);
+  color: var(--pf-9gag-text);
   font-weight: 600;
 }
