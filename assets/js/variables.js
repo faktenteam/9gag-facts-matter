@@ -107,7 +107,8 @@ const S = {
 
   // Media type detection
   videoPost: 'video, .post-video source[type*="video"]',
-  gifPost: '.post-gif, img[src*=".gif"], picture source[type="image/webp"]',
+  gifPost:
+    '.post-gif, img[src*=".gif"], img[srcset*=".gif"], source[src*=".gif"], source[srcset*=".gif"]',
 
   // Menu (username extraction fallback)
   popupMenu: ".uikit-popup-menu",

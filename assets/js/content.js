@@ -357,7 +357,7 @@ function reapplyFromCache(post) {
   const postId = getPostId(post);
   if (postId) {
     const { downvotes, upvotes } = findPostVotes(posts, postId);
-    addVoteCounts(post, downvotes, upvotes);
+    addVoteCounts(post, downvotes, upvotes, !whitelisted);
   }
 
   addVideoControls(post);
@@ -418,6 +418,19 @@ const cacheCleanupInterval = setInterval(() => {
 }, CONSTANTS.CACHE_DURATION);
 activeIntervals.push(cacheCleanupInterval);
 
+function hasWhitelistedUsers() {
+  const whitelisted = settings.whitelisted_users;
+  return Array.isArray(whitelisted) && whitelisted.length > 0;
+}
+
+function applyPostVisibilityFilters(post) {
+  if (filterPromoted(post)) return true;
+  if (filterByKeywords(post)) return true;
+  if (filterByTags(post)) return true;
+  if (filterByMediaType(post)) return true;
+  return false;
+}
+
 async function processPost(post) {
   const postElement = post[0];
 
@@ -431,20 +444,14 @@ async function processPost(post) {
     post.addClass("filtering");
     processedPosts.add(postElement);
 
-    // Early filters that don't need API calls
-    if (filterPromoted(post)) {
-      post.addClass("pf-processed");
-      return;
-    }
-    if (filterByKeywords(post)) {
-      post.addClass("pf-processed");
-      return;
-    }
-    if (filterByTags(post)) {
-      post.addClass("pf-processed");
-      return;
-    }
-    if (filterByMediaType(post)) {
+    // When no whitelist exists, user-independent filters can run early for speed.
+    // If any user is whitelisted, defer these filters until after username extraction
+    // so trusted users consistently bypass post-hiding rules.
+    const deferVisibilityFiltersForWhitelist = hasWhitelistedUsers();
+    if (
+      !deferVisibilityFiltersForWhitelist &&
+      applyPostVisibilityFilters(post)
+    ) {
       post.addClass("pf-processed");
       return;
     }
@@ -464,6 +471,13 @@ async function processPost(post) {
         articleId,
         `(${(tName1 - tName0).toFixed(0)}ms)`,
       );
+      if (
+        deferVisibilityFiltersForWhitelist &&
+        applyPostVisibilityFilters(post)
+      ) {
+        post.addClass("pf-processed");
+        return;
+      }
       post.addClass("pf-processed");
       return;
     }
@@ -482,6 +496,15 @@ async function processPost(post) {
     }
 
     const whitelisted = isWhitelistedUser(username);
+
+    if (
+      !whitelisted &&
+      deferVisibilityFiltersForWhitelist &&
+      applyPostVisibilityFilters(post)
+    ) {
+      post.addClass("pf-processed");
+      return;
+    }
 
     if (
       whitelisted ||
@@ -549,8 +572,11 @@ async function processPost(post) {
       const postId = getPostId(post);
       if (postId) {
         const { downvotes, upvotes } = findPostVotes(posts, postId);
-        const wasHidden = addVoteCounts(post, downvotes, upvotes);
-        if (wasHidden) return;
+        const wasHidden = addVoteCounts(post, downvotes, upvotes, !whitelisted);
+        if (wasHidden) {
+          post.addClass("pf-processed");
+          return;
+        }
       }
     }
 

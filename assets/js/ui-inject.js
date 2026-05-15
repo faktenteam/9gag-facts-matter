@@ -198,10 +198,10 @@ function findPostVotes(posts, postId) {
     : { downvotes: null, upvotes: null };
 }
 
-function addVoteCounts(post, downvotes, upvotes) {
+function addVoteCounts(post, downvotes, upvotes, allowHiding = true) {
   if (downvotes === null || upvotes === null) return false;
 
-  if (settings.more_downvotes && downvotes >= upvotes) {
+  if (allowHiding && settings.more_downvotes && downvotes > upvotes) {
     post.closest(S.streamContainer).first().addClass("filtered");
     post.hide();
     return true;
