@@ -8,6 +8,13 @@ This project follows [Semantic Versioning](https://semver.org/) for the extensio
 
 No unreleased changes yet.
 
+## [1.2] - 2026-05-15
+
+### Changed
+
+- Updated the popup to better match 9GAG's dark color palette.
+- Toned down active switches, focus rings, and export/import button hover states.
+
 ## [1.0.2] - 2026-05-15
 
 ### Added
